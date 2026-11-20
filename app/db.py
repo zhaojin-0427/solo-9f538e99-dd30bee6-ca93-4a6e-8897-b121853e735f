@@ -25,6 +25,16 @@ CREATE TABLE IF NOT EXISTS calibration_points (
     PRIMARY KEY (boot_segment, counter)
 );
 
+-- 等步长校时串：每个开机段至多一串，整串只占一行，不逐点展开。
+CREATE TABLE IF NOT EXISTS calibration_series (
+    boot_segment  TEXT PRIMARY KEY,
+    start_counter INTEGER NOT NULL,  -- 首点段内计数
+    start_utc_ms  INTEGER NOT NULL,  -- 首点 UTC 毫秒
+    counter_step  INTEGER NOT NULL,  -- 计数步长，> 0
+    utc_step      INTEGER NOT NULL,  -- UTC 毫秒步长，>= 0
+    count         INTEGER NOT NULL   -- 点数，1..1_000_000
+);
+
 CREATE TABLE IF NOT EXISTS observations (
     obs_id         TEXT PRIMARY KEY, -- 观测 ID
     boot_segment   TEXT NOT NULL,    -- 原文：开机段
