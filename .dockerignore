@@ -1,0 +1,11 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+conftest.py
+requirements-dev.txt
+*.db
+*.db-wal
+*.db-shm

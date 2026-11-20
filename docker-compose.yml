@@ -1,0 +1,14 @@
+services:
+  buoy-api:
+    build: .
+    image: buoy-tide-api
+    ports:
+      - "8000:8000"
+    environment:
+      BUOY_DB: /data/buoy.db
+    volumes:
+      - buoy-data:/data
+    restart: unless-stopped
+
+volumes:
+  buoy-data:
