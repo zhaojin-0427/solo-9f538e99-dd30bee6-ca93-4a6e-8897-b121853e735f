@@ -20,9 +20,23 @@ _conn: sqlite3.Connection | None = None
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS calibration_points (
     boot_segment TEXT NOT NULL,      -- 开机段
-    counter      INTEGER NOT NULL,   -- 段内毫秒计数
+    counter      INTEGER NOT NULL,   -- 段内毫秒计数（单点校时）
     utc_ms       INTEGER NOT NULL,   -- 对应 UTC 毫秒
     PRIMARY KEY (boot_segment, counter)
+);
+
+-- 等步长校时串（算术序列）：每开机段至多一串，重报即整串替换。
+-- 第 k 个点（0 <= k < point_count）：
+--   counter = first_counter + k * counter_step
+--   utc_ms  = first_utc_ms  + k * utc_step_ms
+-- 仅存首点/步长/点数，绝不逐点展开，单串可达 100 万点而表中始终一行。
+CREATE TABLE IF NOT EXISTS calibration_strings (
+    boot_segment  TEXT PRIMARY KEY, -- 开机段（一段一串，重报替换上一串）
+    first_counter INTEGER NOT NULL, -- 首点段内计数
+    counter_step  INTEGER NOT NULL, -- 计数步长（正整数）
+    first_utc_ms  INTEGER NOT NULL, -- 首点 UTC 毫秒
+    utc_step_ms   INTEGER NOT NULL, -- UTC 毫秒步长（非负整数）
+    point_count   INTEGER NOT NULL  -- 点数（1 ~ 1000000）
 );
 
 CREATE TABLE IF NOT EXISTS observations (
